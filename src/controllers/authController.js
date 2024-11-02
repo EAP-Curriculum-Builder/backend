@@ -1,12 +1,12 @@
 const { getPublicKey } = require("../utils/encryption");
-const { loginHandler } = require('../auth/loginHandler');
+const { loginHandler, registrationHandler } = require('../auth/loginHandler');
 
 const sendPublicKey = (req, res) => {
     res.json({ publicKey: getPublicKey() });
 }
 
 const register = (req, res) => {
-    registrationHandler(res, res);
+    registrationHandler(req, res);
 }
 
 const login = (req, res) => {

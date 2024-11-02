@@ -15,6 +15,7 @@ const loginHandler = async (req, res) => {
 }
 
 const registrationHandler = async (req, res) => {
+    console.log(req.body);
     try {
         const { fullname: encryptedFullname,
                 username: encryptedUsername, 
