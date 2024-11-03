@@ -2,6 +2,7 @@
 const express = require("express")
 const cors = require("cors");
 const morgan = require("morgan");
+require('dotenv').config();
 
 // Own modules
 const authRoutes = require("./router/auth.js");
@@ -12,7 +13,7 @@ const app = express();
 // Apply middleware used across the app
 app.use(express.json());
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: `${process.env.FRONTEND_URL}`,
     optionsSuccessStatus: 200,
     credentials: true,
 }
