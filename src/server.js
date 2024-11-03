@@ -2,6 +2,7 @@
 const express = require("express")
 const cors = require("cors");
 const morgan = require("morgan");
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 // Own modules
@@ -19,6 +20,7 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 app.use(morgan("dev"));
+app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);

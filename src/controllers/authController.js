@@ -1,11 +1,22 @@
 const { getPublicKey, decryptData } = require("../utils/encryption");
 const { validationResult } = require('express-validator')
 const firebaseAdmin = require('../utils/firebase');
-const { getAuth } = require('firebase-admin/auth');
 
-const sendPublicKey = (req, res) => {
+
+const sendPublicKey = (req, res, next) => {
     res.json({ publicKey: getPublicKey() });
 };
+
+// Used as middleware to protect against cross-site request forgery
+const prepCSRF = (req, res, next) => {
+    const csrfToken = req.csrfToken();
+    res.cookie('csfrToken', csrfToken, {
+        httpOnly: false, //allows me access on the client side
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
+    });
+    next();
+}
 
 const decryptLoginData = (req, res, next) => {
     try {
@@ -95,10 +106,12 @@ const authenticateRegistrationData = async (req, res, next) => {
     next();
 };
 
-module.exports = { sendPublicKey, 
-                decryptLoginData,
-                checkValidationErrors,
-                authenticateLoginData,
-                decryptRegistrationData,
-                authenticateRegistrationData
-            };
+module.exports = { 
+    sendPublicKey,
+    prepCSRF,
+    decryptLoginData,
+    checkValidationErrors,
+    authenticateLoginData,
+    decryptRegistrationData,
+    authenticateRegistrationData
+};
