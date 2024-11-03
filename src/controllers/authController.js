@@ -3,14 +3,14 @@ const { validationResult } = require('express-validator')
 const firebaseAdmin = require('../utils/firebase');
 
 
-const sendPublicKey = (req, res, next) => {
+const sendPublicKey = (req, res) => {
     res.json({ publicKey: getPublicKey() });
 };
 
 // Used as middleware to protect against cross-site request forgery
 const prepCSRF = (req, res, next) => {
     const csrfToken = req.csrfToken();
-    res.cookie('csfrToken', csrfToken, {
+    res.cookie('csrfToken', csrfToken, {
         httpOnly: false, //allows me access on the client side
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
@@ -21,13 +21,11 @@ const prepCSRF = (req, res, next) => {
 const decryptLoginData = (req, res, next) => {
     try {
         // Deconstruct incoming data
-        const { username: encryptedUsername, password: encryptedPassword} = req.body;
+        const { uid: encryptedUID } = req.body;
         // Decrypt incoming data
-        const username = decryptData(encryptedUsername);
-        const password = decryptData(encryptedPassword);
+        const uid = decryptData(encryptedUID);
         // Prepare body for incoming data validation
-        req.body.username = username;
-        req.body.password = password;
+        req.body.uid = uid;
         
     } catch (error) {
         req.body.error = {error : "There was an error logging in." };
@@ -76,7 +74,7 @@ const decryptRegistrationData = (req, res, next) => {
     next();
 };
 
-const authenticateRegistrationData = async (req, res, next) => {
+const authenticateSessionWithFirebase = async (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
     console.log(token);
     if (!token) {
@@ -101,9 +99,32 @@ const authenticateRegistrationData = async (req, res, next) => {
     } catch (error) {
         console.log("Oh dear, something went wrong:", error);
     }
-
-    console.log("I will authenticate registration data with firebase!");
     next();
+};
+
+const verifySessionCookie = async (req, res, next) => {
+    const sessionCookie = req.cookies.session || "";
+    console.log("Verifying session cookie...");
+    try {
+        const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(sessionCookie, true);
+        req.user = decodedClaims;
+        next();
+    } catch (error) {
+        res.clearCookie("session"); // Clear cookie if verification fails
+        return res.status(401).json({ message: "unauthorized" });
+    }
+};
+
+const logout = async (req, res) => {
+    try {
+        console.log("Clearing cookie");
+        res.clearCookie('session');
+        await firebaseAdmin.auth().revokeRefreshTokens(req.user.sub);
+        res.status(200).json({ message: "logged out!" });
+    } catch (error) {
+        return res.status(401).json({ message: "unauthorized" });
+    }
+    
 };
 
 module.exports = { 
@@ -113,5 +134,7 @@ module.exports = {
     checkValidationErrors,
     authenticateLoginData,
     decryptRegistrationData,
-    authenticateRegistrationData
+    authenticateSessionWithFirebase,
+    verifySessionCookie,
+    logout
 };

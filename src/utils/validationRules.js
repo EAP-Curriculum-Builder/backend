@@ -13,12 +13,5 @@ const registerValidation = [
         .escape(),
 ];
 
-const loginValidation = [
-    body('username')
-        .trim()
-        .notEmpty().withMessage('You must provide a valid username')
-        .isLength({ min: 6 }).withMessage('Your username must be at least 6 characters')
-        .escape(),
-];
 
-module.exports = { loginValidation, registerValidation };
+module.exports = { registerValidation };
