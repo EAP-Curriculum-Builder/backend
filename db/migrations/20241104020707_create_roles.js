@@ -4,13 +4,11 @@
  */
 exports.up = function(knex) {
   return knex.raw(`
-        CREATE ROLE admin;
-        CREATE ROLE read-write;
-        CREATE ROLE read-only;
+        CREATE ROLE admin WITH LOGIN PASSWORD '';
+        CREATE ROLE readwrite;
+        CREATE ROLE readonly;
         CREATE ROLE migrator;
-        CREATE ROLE learner;
-        CREATE ROLE teacher;
-        CREATE ROLE guest;
+        CREATE ROLE users;
     `);
 };
 
@@ -21,11 +19,9 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.raw(`
         DROP ROLE IF EXISTS admin;
-        DROP ROLE IF EXISTS read-write;
-        DROP ROLE IF EXISTS read-only;
+        DROP ROLE IF EXISTS readwrite;
+        DROP ROLE IF EXISTS readonly;
         DROP ROLE IF EXISTS migrator;
-        DROP ROLE IF EXISTS learner;
-        DROP ROLE IF EXISTS teacher;
-        DROP ROLE IF EXISTS guest;
+        DROP ROLE IF EXISTS users;
     `);
 };
