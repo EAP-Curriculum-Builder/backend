@@ -1,4 +1,4 @@
-const { adminPassword, readwritePassword, readonlyPassword, migratorPassword, usersPassword } = require('../dbpasswords.ts');
+const { adminPassword, readwritePassword, readonlyPassword, migratorPassword, usersPassword } = require('../dbpasswords.js');
 
 /**
  * @param { import("knex").Knex } knex

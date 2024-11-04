@@ -15,20 +15,22 @@ exports.up = async function(knex) {
             });
 
         await trx.raw(`ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY`);
+        // The current_setting('eapApp'...) part is related to a postgreSQL session that I define myself
+        // I have to set the session value when making calls to the database where there is row level security.
         await trx.raw(`
             CREATE POLICY select_user ON auth.users FOR SELECT
-            USING (uid = current_user);
+            USING (current_user = 'admin' OR uid = current_setting('eapApp.current_user_uid')::text);
         `);
         await trx.raw(`
             CREATE POLICY insert_user ON auth.users FOR INSERT
-            WITH CHECK (uid = current_user);
+            WITH CHECK (current_user = 'admin' OR uid = current_setting('eapApp.current_user_uid')::text);
         `);
         await trx.raw(`
             CREATE POLICY update_user ON auth.users FOR UPDATE
-            USING (uid = current_user)
-            WITH CHECK (uid = current_user);
+            USING (current_user = 'admin' OR uid = current_setting('eapApp.current_user_uid')::text)
+            WITH CHECK (current_user = 'admin' OR uid = current_setting('eapApp.current_user_uid')::text);
         `);
-    })
+    });
 };
 
 /**

@@ -30,12 +30,14 @@ router.post('/register',
     authController.decryptRegistrationData, 
     registerValidation, 
     authController.checkValidationErrors, 
+    authController.insertNewUser,
     authController.authenticateSessionWithFirebase
 );
 
 router.post('/login',
     csrfProtection,
     authController.decryptLoginData,
+    authController.getUserByUID,
     authController.authenticateSessionWithFirebase
 );
 

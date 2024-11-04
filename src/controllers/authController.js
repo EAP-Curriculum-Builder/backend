@@ -1,6 +1,7 @@
 const { getPublicKey, decryptData } = require("../utils/encryption");
 const { validationResult } = require('express-validator')
 const firebaseAdmin = require('../utils/firebase');
+const authModel = require('../models/authModel');
 
 
 const sendPublicKey = (req, res) => {
@@ -74,17 +75,54 @@ const decryptRegistrationData = (req, res, next) => {
     next();
 };
 
+const insertNewUser = async (req, res, next) => {
+    const userData = {
+        username: req.body.fullname,
+        fullname: req.body.username,
+        uid: req.body.uid,
+        role: 'learner'
+    };
+
+    try {
+        const auth = new authModel('admin'); // set up an authorization object with the role of admin
+        auth.addUser(userData);
+    } catch (error) {
+        console.error("Oh dear, something went wrong inserting someone in the database!", error);
+    }
+    next();
+}
+
+// Call this function if there is an error after inserting a new user
+const removeNewUser = async (req, res, next) => {
+    try {
+        const auth = new authModel('admin'); // only an admin user can remove data from the database
+        auth.removeUser(req.body.uid);
+    } catch (error) {
+        console.error("Oopsie, something went wrong removing someone from the database!", error);
+    }
+}
+
+// Call this function to get the user from the database
+const getUserByUID = async (req, res, next) => {
+    try {
+        console.log("UID IS:", req.body.uid);
+        const auth = new authModel('admin'); // the user can get their own information
+        const userInfo = await auth.getUserByUID(req.body.uid);
+        console.log("userInfo is:", userInfo);
+        next();
+    } catch (error) {
+        console.error("Oh dear, something has gone wrong getting you from the database:", error);
+    }
+}
+
 const authenticateSessionWithFirebase = async (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
-    console.log(token);
     if (!token) {
         return res.status(401).json({ error: "Unauthorized" });
     }
 
     try {
-        
-        // save user data to my database here
-        // If all goes well then generate a session cookie to expire in 5 days
+        // Generate a session cookie to expire in 5 days
         const sessionCookie = await firebaseAdmin.auth().createSessionCookie(token, { expiresIn: 60 * 60 * 24 * 5 * 1000});
 
         res.cookie("session", sessionCookie, {
@@ -97,9 +135,13 @@ const authenticateSessionWithFirebase = async (req, res, next) => {
         res.status(201).json({ message: "Registration was successful!" });
 
     } catch (error) {
+        // Something went wrong verifying the cookie
+        // Will need to call another function to remove the user from my database
+        // because at this point the new user has been added to my database.
+        // We need to tell the user to try registering again.
+        removeNewUser();
         console.log("Oh dear, something went wrong:", error);
     }
-    next();
 };
 
 const verifySessionCookie = async (req, res, next) => {
@@ -134,6 +176,8 @@ module.exports = {
     checkValidationErrors,
     authenticateLoginData,
     decryptRegistrationData,
+    insertNewUser,
+    getUserByUID,
     authenticateSessionWithFirebase,
     verifySessionCookie,
     logout
