@@ -29,7 +29,8 @@ router.post('/register',
     csrfProtection,
     authController.decryptRegistrationData, 
     registerValidation, 
-    authController.checkValidationErrors, 
+    authController.checkValidationErrors,
+    authController.encryptUserForDatabase,
     authController.insertNewUser,
     authController.authenticateSessionWithFirebase
 );
@@ -38,6 +39,7 @@ router.post('/login',
     csrfProtection,
     authController.decryptLoginData,
     authController.getUserByUID,
+    authController.decryptUserForFrontend,
     authController.authenticateSessionWithFirebase
 );
 

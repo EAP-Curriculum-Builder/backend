@@ -1,4 +1,5 @@
 const { getPublicKey, decryptData } = require("../utils/encryption");
+const { restEncryption, restDecryption } = require("../utils/encryptionAtRest");
 const { validationResult } = require('express-validator')
 const firebaseAdmin = require('../utils/firebase');
 const authModel = require('../models/authModel');
@@ -20,6 +21,7 @@ const prepCSRF = (req, res, next) => {
 }
 
 const decryptLoginData = (req, res, next) => {
+    req.body.action = "login"; // used to check user action later
     try {
         // Deconstruct incoming data
         const { uid: encryptedUID } = req.body;
@@ -44,12 +46,9 @@ const checkValidationErrors = (req, res, next) => {
     next();
 };
 
-const authenticateLoginData = (req, res, next) => {
-    console.log("I will authenticate login data with firebase!");
-    next();
-};
 
 const decryptRegistrationData = (req, res, next) => {
+    req.body.action = "registration"; // Used to check the user action later.
     try {
         // Deconstruct incoming data
         const { fullname: encryptedFullname,
@@ -75,10 +74,17 @@ const decryptRegistrationData = (req, res, next) => {
     next();
 };
 
+const encryptUserForDatabase = async (req, res, next) => {
+    req.body.fullnameEncrypted = restEncryption(req.body.fullname, process.env.REST_ENCRYPTION_KEY);
+    req.body.usernameEncrypted = restEncryption(req.body.username, process.env.REST_ENCRYPTION_KEY);
+    next();
+}
+
 const insertNewUser = async (req, res, next) => {
+    req.body.role = 'learner'; // This is set here because it can be sent back to the front end later.
     const userData = {
-        username: req.body.fullname,
-        fullname: req.body.username,
+        username: req.body.fullnameEncrypted,
+        fullname: req.body.usernameEncrypted,
         uid: req.body.uid,
         role: 'learner'
     };
@@ -108,14 +114,21 @@ const getUserByUID = async (req, res, next) => {
         console.log("UID IS:", req.body.uid);
         const auth = new authModel('admin'); // the user can get their own information
         const userInfo = await auth.getUserByUID(req.body.uid);
-        console.log("userInfo is:", userInfo);
+        req.body.username = userInfo[0].username;
+        req.body.role = userInfo[0].role;
         next();
     } catch (error) {
         console.error("Oh dear, something has gone wrong getting you from the database:", error);
     }
 }
 
-const authenticateSessionWithFirebase = async (req, res, next) => {
+const decryptUserForFrontend = (req, res, next) => {
+    req.body.username = restDecryption(req.body.username, process.env.REST_ENCRYPTION_KEY);
+    next();
+}
+
+// This is used for both registration and login as the final step
+const authenticateSessionWithFirebase = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -132,14 +145,17 @@ const authenticateSessionWithFirebase = async (req, res, next) => {
             sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
         });
 
-        res.status(201).json({ message: "Registration was successful!" });
+        res.status(200).json({ message: "Registration was successful!", username: req.body.username, role: req.body.role, uid: req.body.uid });
 
     } catch (error) {
         // Something went wrong verifying the cookie
         // Will need to call another function to remove the user from my database
         // because at this point the new user has been added to my database.
         // We need to tell the user to try registering again.
-        removeNewUser();
+        if (req.body.action === "login") {
+            removeNewUser();
+        }
+        
         console.log("Oh dear, something went wrong:", error);
     }
 };
@@ -174,10 +190,11 @@ module.exports = {
     prepCSRF,
     decryptLoginData,
     checkValidationErrors,
-    authenticateLoginData,
     decryptRegistrationData,
+    encryptUserForDatabase,
     insertNewUser,
     getUserByUID,
+    decryptUserForFrontend,
     authenticateSessionWithFirebase,
     verifySessionCookie,
     logout
