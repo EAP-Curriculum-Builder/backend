@@ -7,9 +7,9 @@
     "start": "node ./src/server.js",
     "build": "",
     "dev": "nodemon ./src/server.js",
-    "migrate-latest": "",
-    "migrate-down": "",
-    "seed": "",
+    "migrate-latest": "knex migrate:latest",
+    "migrate-down": "knex migrate:rollback",
+    "seed": "knex seed:run",
     "test": "mocha test/**/*.test.js"
   },
   "keywords": [],
