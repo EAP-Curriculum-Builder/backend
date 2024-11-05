@@ -12,13 +12,15 @@ const getLearningGenres = async (req, res) => {
 }
 
 const getTopics = async (req, res) => {
+    console.log("The request is:", req.body);
     try {
+        
         const createLearning = new createLearningModel();
-        const associatedTopics = await createLearning.getAssociatedTopics(req.body);
+        const associatedTopics = await createLearning.getAssociatedTopics(req.body.id);
         res.status(200).json(associatedTopics);
     } catch (error) {
         console.log('It seems there was an error getting topics', error);
-        res.status(500).json({ message: 'something went wrong, but not sure what'});
+        res.status(500).json({ message: 'something went wrong, but not sure what' });
     }
 }
 

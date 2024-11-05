@@ -22,9 +22,9 @@ class CreateLearning {
         }
     }
 
-    async getAssociatedTopic(genreId) {
+    async getAssociatedTopics(genreId) {
         try {
-            const associatedTopics = await this.#knexUser('learningTopics')
+            const associatedTopics = await this.#knexUser('topics')
                 .column(['id', 'topic'])
                 .select()
                 .where('genre_id', genreId);

@@ -12,6 +12,6 @@ router.get('/learning',
 
 router.post('/topics',
     createLearningController.getTopics
-)
+);
 
 module.exports = router;
