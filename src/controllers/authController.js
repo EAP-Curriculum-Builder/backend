@@ -90,7 +90,7 @@ const insertNewUser = async (req, res, next) => {
     };
 
     try {
-        const auth = new authModel('admin'); // set up an authorization object with the role of admin
+        const auth = new authModel(); // set up an authorization object with the role of admin
         auth.addUser(userData);
     } catch (error) {
         console.error("Oh dear, something went wrong inserting someone in the database!", error);
@@ -101,7 +101,7 @@ const insertNewUser = async (req, res, next) => {
 // Call this function if there is an error after inserting a new user
 const removeNewUser = async (req, res, next) => {
     try {
-        const auth = new authModel('admin'); // only an admin user can remove data from the database
+        const auth = new authModel(); // only an admin user can remove data from the database
         auth.removeUser(req.body.uid);
     } catch (error) {
         console.error("Oopsie, something went wrong removing someone from the database!", error);
@@ -112,7 +112,7 @@ const removeNewUser = async (req, res, next) => {
 const getUserByUID = async (req, res, next) => {
     try {
         console.log("UID IS:", req.body.uid);
-        const auth = new authModel('admin'); // the user can get their own information
+        const auth = new authModel(); // the user can get their own information
         const userInfo = await auth.getUserByUID(req.body.uid);
         req.body.username = userInfo[0].username;
         req.body.role = userInfo[0].role;

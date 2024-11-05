@@ -1,21 +1,19 @@
 class AuthorizeUsers {
-    #role;
     #knexUser;
 
-    constructor(role) {
-        this.#role = role;
-        this.#knexUser = this.#getKnexInstance(role);
+    constructor() {
+        this.#knexUser = this.#getKnexInstance();
         console.log(this.#knexUser);
     }
 
-    #getKnexInstance = (role) => {
-        const config = require('../../knexfile.js')[this.#role];
+    #getKnexInstance = () => {
+        const config = require('../../knexfile.js')
         return require('knex')(config);
     }
 
     async addUser(userData) {
         try {
-            await this.#knexUser('auth.users').insert({
+            await this.#knexUser('users').insert({
                 uid: userData.uid,
                 username: userData.username,
                 fullname: userData.fullname,
@@ -29,8 +27,7 @@ class AuthorizeUsers {
 
     async getUserByUID(userUID) {
         try {
-            await this.#knexUser.raw(`SET eapApp.current_user_uid = '${userUID}'`);
-            const response = await this.#knexUser('auth.users')
+            const response = await this.#knexUser('users')
                 .select('username', 'role')
                 .where('uid', userUID);
             return response;
@@ -42,14 +39,9 @@ class AuthorizeUsers {
 
     async removeUser(userUID) {
         try {
-            // only admin can do this!
-            if (this.#role === 'admin') {
-                await this.#knexUser('auth.users')
+            await this.#knexUser('users')
                     .where('uid', userUID)
                     .del();
-            } else {
-                throw new Error("Unauthorized!");
-            }
         } catch (error) {
             console.log("There was an error:", error);
             throw new Error();
