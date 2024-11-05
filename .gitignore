@@ -132,3 +132,6 @@ dist
 # Misc
 .DS_Store
 *.pem
+
+# Secret files
+secrets

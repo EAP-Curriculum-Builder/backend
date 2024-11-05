@@ -12,6 +12,9 @@ const baseConfigDev = {
     migrations: {
         directory: './db/migrations'
     },
+    seeds: {
+        directory: "./db/seeds"
+    }
 };
 
 const baseConfigStag = {

@@ -2,8 +2,8 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-const publicKeyPath = path.join(__dirname, 'public_key.pem');
-const privateKeyPath = path.join(__dirname, 'private_key.pem');
+const publicKeyPath = process.env.NODE_ENV === "production" ? '/etc/secrets/public_key.pem' : process.env.NODE_ENV === "staging" ? '/etc/secrets/public_key.pem' : path.join(__dirname, 'public_key.pem');
+const privateKeyPath = process.env.NODE_ENV === "production" ? '/etc/secrets/private_key.pem' : process.env.NODE_ENV === "staging" ? '/etc/secrets/private_key.pem' : path.join(__dirname, 'private_key.pem');
 
 const getPublicKey = () => {
     if (!fs.existsSync(publicKeyPath) || !fs.existsSync(privateKeyPath)) {

@@ -27,7 +27,7 @@ app.use("/api/auth", authRoutes);
 
 // Landing page
 app.get("/", (req, res) => {
-    res.send('Hello from homepage');
+    res.status(200).json({ message: 'Hello from homepage' });
 });
 
 
