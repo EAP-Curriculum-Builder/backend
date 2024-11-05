@@ -9,4 +9,9 @@ router.get('/learning',
     verifySessionCookie,
     createLearningController.getLearningGenres
 );
+
+router.post('/topics',
+    createLearningController.getTopics
+)
+
 module.exports = router;

@@ -21,6 +21,19 @@ class CreateLearning {
             throw new Error();
         }
     }
+
+    async getAssociatedTopic(genreId) {
+        try {
+            const associatedTopics = await this.#knexUser('learningTopics')
+                .column(['id', 'topic'])
+                .select()
+                .where('genre_id', genreId);
+            return associatedTopics;
+        } catch (error) {
+            console.log("There was an error getting the associated topics:", error);
+            throw new Error();
+        }
+    }
 }
 
 module.exports = CreateLearning;
