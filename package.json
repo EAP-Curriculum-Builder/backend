@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server.js",
-    "build": "knex migrate:rollback && knex migrate:latest && knex seed:run",
+    "build": "knex migrate:latest && knex seed:run",
     "dev": "nodemon ./src/server.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-down": "knex migrate:rollback",
