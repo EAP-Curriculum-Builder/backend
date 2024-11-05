@@ -7,7 +7,7 @@ class AuthorizeUsers {
     }
 
     #getKnexInstance = () => {
-        const config = require('../../knexfile.js')
+        const config = require('../../knexfile.js');
         return require('knex')(config);
     }
 

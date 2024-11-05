@@ -20,5 +20,5 @@ exports.up = async function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-  return knex.schema.withSchema('auth').dropTableIfExists('users');
+  return knex.schema.dropTableIfExists('users');
 };
