@@ -12,8 +12,8 @@ class CreateLearning {
 
     async getLearningGenres() {
         try {
-            const learningGenres = await this.#knexUser('learningGenres')
-                .column(['id', 'genre'])
+            const learningGenres = await this.#knexUser('learning_genres')
+                .column(['id', 'type', 'genre'])
                 .select();
             return learningGenres;
         } catch (error) {
@@ -25,7 +25,7 @@ class CreateLearning {
     async getAssociatedTopics(genreId) {
         try {
             const associatedTopics = await this.#knexUser('topics')
-                .column(['id', 'topic'])
+                .column(['id', 'topic', 'theme'])
                 .select()
                 .where('genre_id', genreId);
             return associatedTopics;
