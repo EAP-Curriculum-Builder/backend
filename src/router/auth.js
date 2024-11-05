@@ -9,21 +9,21 @@ router.use(express.json());
 // Cross-site request forgery protection
 // Requested on initial access to the website
 const csrfProtection = csrf({ cookie: true });
-console.log(csrfProtection);
+
 router.get('/public-key-csrf',
-    csrfProtection,
-    (req, res, next) => {
-        console.log('CSRF Token:', req.csrfToken());
-        next();
-    },
-    authController.prepCSRF,
+    // csrfProtection,
+    // (req, res, next) => {
+    //     console.log('CSRF Token:', req.csrfToken());
+    //     next();
+    // },
+    // authController.prepCSRF,
     authController.sendPublicKey
 );
 
 // If a session cookie was present, verify the session cookie first.
 // This is done on initial access to the website
 router.get('/verify-session',
-    csrfProtection,
+    //csrfProtection,
     authController.verifySessionCookie,
     (req, res) => {
         res.status(200).json({ message: "session verified" });
@@ -31,7 +31,7 @@ router.get('/verify-session',
 );
 
 router.post('/register',
-    csrfProtection,
+    //csrfProtection,
     authController.decryptRegistrationData, 
     registerValidation, 
     authController.checkValidationErrors,
@@ -41,7 +41,7 @@ router.post('/register',
 );
 
 router.post('/login',
-    csrfProtection,
+    //csrfProtection,
     authController.decryptLoginData,
     authController.getUserByUID,
     authController.decryptUserForFrontend,
@@ -49,7 +49,7 @@ router.post('/login',
 );
 
 router.get('/logout',
-  csrfProtection,
+  //csrfProtection,
   authController.verifySessionCookie,
   authController.logout  
 );
