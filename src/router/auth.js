@@ -9,8 +9,13 @@ router.use(express.json());
 // Cross-site request forgery protection
 // Requested on initial access to the website
 const csrfProtection = csrf({ cookie: true });
+console.log(csrfProtection);
 router.get('/public-key-csrf',
     csrfProtection,
+    (req, res, next) => {
+        console.log('CSRF Token:', req.csrfToken());
+        next();
+    },
     authController.prepCSRF,
     authController.sendPublicKey
 );
