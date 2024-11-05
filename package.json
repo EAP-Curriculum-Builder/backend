@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server.js",
-    "build": "knex migrate:latest && knex seed:run",
+    "build": "npm run migrate && sleep 5 && npm run seed",
     "dev": "nodemon ./src/server.js",
-    "migrate-latest": "knex migrate:latest",
+    "migrate-latest": "knex migrate:latest --debug",
     "migrate-down": "knex migrate:rollback",
     "seed": "knex seed:run",
     "test": "mocha test/**/*.test.js"
