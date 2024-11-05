@@ -18,11 +18,27 @@ const baseConfigDev = {
 };
 
 const baseConfigStag = {
-    connection: process.env.DB_URL_STAG
+    client: process.env.DB_CLIENT,
+    connection: process.env.DB_URL_STAG,
+    debug: true,
+    migrations: {
+        directory: './db/migrations'
+    },
+    seeds: {
+        directory: "./db/seeds"
+    }
 }
 
 const baseConfigProd = {
-    connection: process.env.DB_URL_PROD
+    client: process.env.DB_CLIENT,
+    connection: process.env.DB_URL_PROD,
+    debug: true,
+    migrations: {
+        directory: './db/migrations'
+    },
+    seeds: {
+        directory: "./db/seeds"
+    }
 }
 
 const config = {
