@@ -21,6 +21,11 @@ exports.up = function(knex) {
               .inTable('learning_genres')
               .onDelete('CASCADE')
               .onUpdate('CASCADE');
+          table.integer('text_id')
+              .references('id')
+              .inTable('texts')
+              .onDelete('CASCADE')
+              .onUpdate('CASCADE');  
           table.jsonb("exercise_id_array");
           table.timestamps(true, true);
       })

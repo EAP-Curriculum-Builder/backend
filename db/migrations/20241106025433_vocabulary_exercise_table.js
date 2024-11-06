@@ -21,6 +21,9 @@ exports.up = function(knex) {
               .onUpdate('CASCADE');
           table.integer('exercise_num').notNullable(); // in case users have more than one vocab exercise in their learning path
           // the exercise_num is stored in the exercises_id_array in learning_path table
+          table.integer('study_count'); // tracks how often students have looked at this word
+          table.integer('correct_count'); // tracks how often students have gotten this correct
+          table.integer('knowledge_level'); // tracks how well the students know the word
           table.timestamps(true, true);
       })
   };

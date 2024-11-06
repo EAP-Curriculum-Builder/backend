@@ -14,6 +14,12 @@ exports.up = function(knex) {
               .inTable('learning_genres')
               .onDelete('CASCADE')
               .onUpdate('CASCADE');
+          table.integer('text_id')
+              .unsigned()
+              .references('id')
+              .inTable('texts')
+              .onDelete('CASCADE')
+              .onUpdate('CASCADE');
           table.timestamps(true, true);
       })
   };

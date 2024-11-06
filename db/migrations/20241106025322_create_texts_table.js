@@ -8,20 +8,8 @@ exports.up = function(knex) {
           table.increments('id').primary();
           table.string('title').notNullable();
           table.text('text').notNullable().unique();
-          table.string('resource_type'); // picture, audio, webpage, 
-          table.string('resource'); // a url to the learning resource
-          table.integer('genre_id')
-              .unsigned()
-              .references('id')
-              .inTable('learning_genres')
-              .onDelete('CASCADE')
-              .onUpdate('CASCADE');
-          table.integer('topics_id')
-              .unsigned()
-              .references('id')
-              .inTable('topics')
-              .onDelete('CASCADE')
-              .onUpdate('CASCADE');
+          table.jsonb('resource_type'); // picture, audio, webpage, 
+          table.jsonb('resource'); // urls to the learning resource
           table.timestamps(true, true);
       })
   };
