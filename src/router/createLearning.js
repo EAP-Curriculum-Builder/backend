@@ -11,7 +11,13 @@ router.get('/learning',
 );
 
 router.post('/topics',
+    verifySessionCookie,
     createLearningController.getTopics
 );
+
+router.post('/exercises',
+    verifySessionCookie,
+    createLearningController.getExercisesAvailable
+)
 
 module.exports = router;

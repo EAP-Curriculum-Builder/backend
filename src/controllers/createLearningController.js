@@ -24,7 +24,20 @@ const getTopics = async (req, res) => {
     }
 }
 
+const getExercisesAvailable = async (req, res) => {
+    console.log("The request is:", req.body);
+    try {
+        const createLearning = new createLearningModel();
+        const exercisesAvailable = await createLearning.getExercisesAvailable(req.body.text_id);
+        res.status(200).json(exercisesAvailable);
+    } catch (error) {
+        console.log('It seems there was an error getting the exercises available', error);
+        res.status(500).json({ message: 'Something has gone a bit wrong!' });
+    }
+}
+
 module.exports = {
     getLearningGenres,
-    getTopics
+    getTopics,
+    getExercisesAvailable
 }
