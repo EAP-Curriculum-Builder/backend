@@ -47,6 +47,19 @@ class CreateLearning {
             throw new Error();
         }
     }
+
+    async setUsersLearningPath(learningPathData) {
+        try {
+            const learningPathFeedback = await this.#knexUser('learning_path')
+                                                .returning('*')
+                                                .insert(learningPathData.learningPath)
+            console.log("Feedback:", learningPathFeedback);
+            return learningPathFeedback;
+        } catch (error) {
+            console.log("There was an error getting your learning path into the database", error);
+            throw new Error();
+        }
+    }
 }
 
 module.exports = CreateLearning;

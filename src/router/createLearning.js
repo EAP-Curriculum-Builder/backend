@@ -18,6 +18,10 @@ router.post('/topics',
 router.post('/exercises',
     verifySessionCookie,
     createLearningController.getExercisesAvailable
-)
+);
+
+router.post('/learningpath',
+    createLearningController.setLearningPath
+);
 
 module.exports = router;
