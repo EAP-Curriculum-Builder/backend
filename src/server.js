@@ -8,6 +8,7 @@ require('dotenv').config();
 // Own modules
 const authRoutes = require("./router/auth.js");
 const createLearningRoutes = require("./router/createLearning.js");
+const accessLearningRoutes = require("./router/accessLearning.js");
 
 // Invoke an express object;
 const app = express();
@@ -26,6 +27,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/create", createLearningRoutes);
+app.use("/api/access", accessLearningRoutes);
 
 // Landing page
 app.get("/", (req, res) => {
